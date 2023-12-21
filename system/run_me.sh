@@ -1,0 +1,1 @@
+nohup python -u main.py -t 3 -ab 1 -lr 0.01 -jr 1 -lbs 10 -ls 1 -nc 20 -nb 10 -data Cifar10 -m HtFE8 -fd 512 -did 3 -algo FedTGP -lam 10 -se 100 -mart 100 > total-Cifar10-HtFE8-fd=512-FedTGP.out 2>&1 &
