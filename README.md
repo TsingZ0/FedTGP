@@ -2,6 +2,8 @@
 
 This is the implementation of our paper *[FedTGP: Trainable Global Prototypes with Adaptive-Margin-Enhanced Contrastive Learning for Data and Model Heterogeneity in Federated Learning](https://arxiv.org/abs/2401.03230)* (accepted by AAAI 2024). 
 
+*Key words: federated learning, data heterogeneity, model heterogeneity, communication overhead, intellectual property (IP) protection*
+
 ![](./fig2.png)
 The global and client prototypes in FedProto and our FedTGP. Different colors and numbers represent classes and clients, respectively. Circles represent the client prototypes and triangles represent the global prototypes. The black and yellow dotted arrows show the inter-class separation among the client and global prototypes, respectively. Triangles with dotted borders represent our Trainable Global Prototypes (TGP). The red arrows show the inter-class intervals between TGP and the client prototypes of other classes in our Adaptive-margin-enhanced Contrastive Learning (ACL).
 
