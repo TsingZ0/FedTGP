@@ -9,15 +9,6 @@ from sklearn.preprocessing import label_binarize
 from sklearn import metrics
 from utils.data_utils import read_client_data
 
-import torchvision
-from flcore.trainmodel.models import *
-
-from flcore.trainmodel.bilstm import *
-from flcore.trainmodel.resnet import *
-from flcore.trainmodel.alexnet import *
-from flcore.trainmodel.mobilenet_v2 import *
-from flcore.trainmodel.transformer import *
-
 class Client(object):
     """
     Base class for clients in federated learning.
@@ -40,31 +31,12 @@ class Client(object):
 
         self.feature_dim = args.feature_dim
 
-        which_model = args.models[self.id % len(args.models)]
-        model = eval(which_model).to(self.device)
-
-        model.fc = nn.AdaptiveAvgPool1d(self.feature_dim)
-
-        head = nn.Linear(self.feature_dim, self.num_classes) # can be more personalized
-        model = BaseHeadSplit(model, head).to(self.device)
-        # print(f'Client {self.id}', which_model, model)
-
-        # check BatchNorm
-        self.has_BatchNorm = False
-        for layer in model.children():
-            if isinstance(layer, nn.BatchNorm2d):
-                self.has_BatchNorm = True
-                break
-
         self.train_slow = kwargs['train_slow']
         self.send_slow = kwargs['send_slow']
         self.train_time_cost = {'num_rounds': 0, 'total_cost': 0.0}
         self.send_time_cost = {'num_rounds': 0, 'total_cost': 0.0}
 
         self.loss = nn.CrossEntropyLoss()
-
-        if args.save_folder_name == 'temp' or 'temp' not in args.save_folder_name:
-            save_item(model, self.role, 'model', self.save_folder_name)
 
 
     def load_train_data(self, batch_size=None):
