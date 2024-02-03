@@ -20,20 +20,17 @@ class clientTGP(Client):
     def __init__(self, args, id, train_samples, test_samples, **kwargs):
         super().__init__(args, id, train_samples, test_samples, **kwargs)
 
-        which_model = args.models[self.id % len(args.models)]
-        model = eval(which_model).to(self.device)
-
-        if hasattr(args, 'heads'):
-            which_head = args.heads[self.id % len(args.heads)]
-            head = eval(which_head)
-        else:
-            head = nn.Linear(self.feature_dim, self.num_classes)
-
-        model.fc = nn.AdaptiveAvgPool1d(self.feature_dim)
-        model = BaseHeadSplit(model, head).to(self.device)
-        # print(f'Client {self.id}', which_model, model)
-
         if args.save_folder_name == 'temp' or 'temp' not in args.save_folder_name:
+            model = load_item(self.role, 'model', self.save_folder_name)
+            if hasattr(args, 'heads'):
+                which_head = args.heads[self.id % len(args.heads)]
+                head = eval(which_head)
+            else:
+                head = nn.Linear(self.feature_dim, self.num_classes)
+
+            model.fc = nn.AdaptiveAvgPool1d(self.feature_dim)
+            model = BaseHeadSplit(model, head).to(self.device)
+            # print(f'Client {self.id}', which_model, model)
             save_item(model, self.role, 'model', self.save_folder_name)
 
         self.loss_mse = nn.MSELoss()

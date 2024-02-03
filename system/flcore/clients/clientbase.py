@@ -9,6 +9,15 @@ from sklearn.preprocessing import label_binarize
 from sklearn import metrics
 from utils.data_utils import read_client_data
 
+import torchvision
+from flcore.trainmodel.models import *
+
+from flcore.trainmodel.bilstm import *
+from flcore.trainmodel.resnet import *
+from flcore.trainmodel.alexnet import *
+from flcore.trainmodel.mobilenet_v2 import *
+from flcore.trainmodel.transformer import *
+
 class Client(object):
     """
     Base class for clients in federated learning.
@@ -30,6 +39,11 @@ class Client(object):
         self.local_epochs = args.local_epochs
 
         self.feature_dim = args.feature_dim
+
+        if args.save_folder_name == 'temp' or 'temp' not in args.save_folder_name:
+            which_model = args.models[self.id % len(args.models)]
+            model = eval(which_model).to(self.device)
+            save_item(model, self.role, 'model', self.save_folder_name)
 
         self.train_slow = kwargs['train_slow']
         self.send_slow = kwargs['send_slow']
@@ -146,6 +160,6 @@ def save_item(item, role, item_name, item_path=None):
 def load_item(role, item_name, item_path=None):
     try:
         return torch.load(os.path.join(item_path, role + "_" + item_name + ".pt"))
-    except:
+    except FileNotFoundError:
         print(role, item_name, 'Not Found')
         return None
