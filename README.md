@@ -9,6 +9,17 @@ Take away: We enhance the typical HtFL method FedProto with Trainable Global Pro
 - [Slides](./[AAAI]%20FedTGP.pdf)
 - [Poster](./FedTGPPoster.pdf)
 
+**Citation**
+
+```
+@inproceedings{zhang2024fedtgp,
+  title={FedTGP: Trainable Global Prototypes with Adaptive-Margin-Enhanced Contrastive Learning for Data and Model Heterogeneity in Federated Learning},
+  author={Zhang, Jianqing and Liu, Yang and Hua, Yang and Cao, Jian},
+  booktitle={Proceedings of the AAAI Conference on Artificial Intelligence},
+  year={2024}
+}
+```
+
 ![](./fig2.png)
 The global and client prototypes in FedProto and our FedTGP. Different colors and numbers represent classes and clients, respectively. Circles represent the client prototypes and triangles represent the global prototypes. The black and yellow dotted arrows show the inter-class separation among the client and global prototypes, respectively. Triangles with dotted borders represent our Trainable Global Prototypes (TGP). The red arrows show the inter-class intervals between TGP and the client prototypes of other classes in our Adaptive-margin-enhanced Contrastive Learning (ACL).
 
