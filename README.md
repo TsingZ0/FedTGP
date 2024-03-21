@@ -36,7 +36,7 @@ Due to the file size limitation, we only upload the statistics (`config.json`) o
 - `flcore/`: 
     - `clients/`: the code on clients. See [HtFL](https://github.com/TsingZ0/HtFL) for baselines.
     - `servers/`: the code on servers. See [HtFL](https://github.com/TsingZ0/HtFL) for baselines.
-    - `trainmodel/`: the code for models. 
+    - `trainmodel/`: the code for some heterogeneous client models. 
 - `utils/`:
     - `data_utils.py`: the code to read the dataset. 
     - `mem_utils.py`: the code to record memory usage. 
