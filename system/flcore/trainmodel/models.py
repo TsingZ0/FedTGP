@@ -7,7 +7,6 @@ from flcore.trainmodel.bilstm import *
 from flcore.trainmodel.resnet import *
 from flcore.trainmodel.alexnet import *
 from flcore.trainmodel.mobilenet_v2 import *
-from flcore.trainmodel.transformer import *
 
 
 # split an original model into a base and a head
