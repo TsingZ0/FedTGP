@@ -1,23 +1,61 @@
 import math
 import torch
 import torch.nn.functional as F
+import torchvision
 from torch import nn, Tensor
-
-batch_size = 10
+from flcore.trainmodel.bilstm import *
+from flcore.trainmodel.resnet import *
+from flcore.trainmodel.alexnet import *
+from flcore.trainmodel.mobilenet_v2 import *
+from flcore.trainmodel.transformer import *
 
 
 # split an original model into a base and a head
 class BaseHeadSplit(nn.Module):
-    def __init__(self, base, head):
-        super(BaseHeadSplit, self).__init__()
+    def __init__(self, args, cid):
+        super().__init__()
 
-        self.base = base
-        self.head = head
+        self.base = eval(args.models[cid % len(args.models)])
+        head = None
+        if hasattr(self.base, 'heads'):
+            head = self.base.heads
+            self.base.heads = nn.AdaptiveAvgPool1d(args.feature_dim)
+        elif hasattr(self.base, 'head'):
+            head = self.base.head
+            self.base.head = nn.AdaptiveAvgPool1d(args.feature_dim)
+        elif hasattr(self.base, 'fc'):
+            head = self.base.fc
+            self.base.fc = nn.AdaptiveAvgPool1d(args.feature_dim)
+        elif hasattr(self.base, 'classifier'):
+            head = self.base.classifier
+            self.base.classifier = nn.AdaptiveAvgPool1d(args.feature_dim)
+        else:
+            raise('The base model does not have a classification head.')
+
+        if hasattr(args, 'heads'):
+            self.head = eval(args.heads[cid % len(args.heads)])
+        else:
+            self.head = nn.Linear(args.feature_dim, args.num_classes)
         
     def forward(self, x):
         out = self.base(x)
         out = self.head(out)
+        return out
 
+class Head(nn.Module):
+    def __init__(self, num_classes=10, hidden_dims=[512]):
+        super().__init__()
+        hidden_dims.append(num_classes)
+
+        layers = []
+        for idx in range(1, len(hidden_dims)):
+            layers.append(nn.Linear(hidden_dims[idx-1], hidden_dims[idx]))
+            layers.append(nn.ReLU(inplace=True))
+
+        self.fc = nn.Sequential(*layers)
+
+    def forward(self, rep):
+        out = self.fc(rep)
         return out
 
 ###########################################################
@@ -76,44 +114,30 @@ class CNN(nn.Module):
 
 # https://github.com/jindongwang/Deep-learning-activity-recognition/blob/master/pytorch/network.py
 class HARCNN(nn.Module):
-    def __init__(self, in_channels=9, height=128, num_classes=6, conv_kernel_size=(1, 9), 
-                 pool_kernel_size=(1, 2), num_cov=2, feature_dim=512, hidden_dims=[1024]):
+    def __init__(self, in_channels=9, dim_hidden=64*26, num_classes=6, conv_kernel_size=(1, 9), pool_kernel_size=(1, 2)):
         super().__init__()
-        convs = [nn.Sequential(
+        self.conv1 = nn.Sequential(
             nn.Conv2d(in_channels, 32, kernel_size=conv_kernel_size),
             nn.ReLU(),
             nn.MaxPool2d(kernel_size=pool_kernel_size, stride=2)
-        )]
-        height = int((height - conv_kernel_size[1]) / 2 + 1)
-        height = int((height - pool_kernel_size[1]) / 2 + 1)
-        for i in range(num_cov-1):
-            convs.append(nn.Sequential(
-                nn.Conv2d(2**(i+5), 2**(i+6), kernel_size=conv_kernel_size),
-                nn.ReLU(),
-                nn.MaxPool2d(kernel_size=pool_kernel_size, stride=2)
-            ))
-            height = int((height - conv_kernel_size[1]) / 2 + 1)
-            height = int((height - pool_kernel_size[1]) / 2 + 1)
-        self.conv = nn.Sequential(*convs)
-
-        self.in_features = height*2**(i+6)
-        hidden_dims.append(feature_dim)
-
-        layers = [nn.Flatten()]
-        for idx in range(len(hidden_dims)):
-            if len(layers) == 1:
-                layers.append(nn.Linear(self.in_features, hidden_dims[idx]))
-                layers.append(nn.ReLU())
-            else:
-                layers.append(nn.Linear(hidden_dims[idx-1], hidden_dims[idx]))
-                layers.append(nn.ReLU())
-
-        self.fc1 = nn.Sequential(*layers)
-        self.fc = nn.Linear(512, num_classes)
+        )
+        self.conv2 = nn.Sequential(
+            nn.Conv2d(32, 64, kernel_size=conv_kernel_size),
+            nn.ReLU(),
+            nn.MaxPool2d(kernel_size=pool_kernel_size, stride=2)
+        )
+        self.fc = nn.Sequential(
+            nn.Linear(dim_hidden, 1024),
+            nn.ReLU(), 
+            nn.Linear(1024, 512),
+            nn.ReLU(), 
+            nn.Linear(512, num_classes)
+        )
 
     def forward(self, x):
-        out = self.conv(x)
-        out = self.fc1(out)
+        out = self.conv1(x)
+        out = self.conv2(out)
+        out = torch.flatten(out, 1)
         out = self.fc(out)
         return out
 
@@ -270,34 +294,6 @@ class FedAvgMLP(nn.Module):
 
 # ====================================================================================================================
 
-class Net(nn.Module):
-    def __init__(self):
-        super(Net, self).__init__()
-        self.conv1 = nn.Conv2d(1, batch_size, 2, 1)
-        self.conv2 = nn.Conv2d(batch_size, 32, 2, 1)
-        self.dropout1 = nn.Dropout(0.25)
-        self.dropout2 = nn.Dropout(0.5)
-        self.fc1 = nn.Linear(18432, 128)
-        self.fc = nn.Linear(128, 10)
-
-    def forward(self, x):
-        x = self.conv1(x)
-        x = nn.ReLU()(x)
-        x = nn.MaxPool2d(2, 1)(x)
-        x = self.dropout1(x)
-        x = self.conv2(x)
-        x = nn.ReLU()(x)
-        x = nn.MaxPool2d(2, 1)(x)
-        x = self.dropout2(x)
-        x = torch.flatten(x, 1)
-        x = self.fc1(x)
-        x = nn.ReLU()(x)
-        x = self.fc(x)
-        output = F.log_softmax(x, dim=1)
-        return output
-
-# ====================================================================================================================
-
 class Mclr_Logistic(nn.Module):
     def __init__(self, input_dim=1*28*28, num_classes=10):
         super(Mclr_Logistic, self).__init__()
@@ -320,28 +316,6 @@ class DNN(nn.Module):
     def forward(self, x):
         x = torch.flatten(x, 1)
         x = F.relu(self.fc1(x))
-        x = self.fc(x)
-        x = F.log_softmax(x, dim=1)
-        return x
-
-# ====================================================================================================================
-
-class CifarNet(nn.Module):
-    def __init__(self, num_classes=10):
-        super(CifarNet, self).__init__()
-        self.conv1 = nn.Conv2d(3, 6, 5)
-        self.pool = nn.MaxPool2d(2, 2)
-        self.conv2 = nn.Conv2d(6, batch_size, 5)
-        self.fc1 = nn.Linear(batch_size * 5 * 5, 120)
-        self.fc2 = nn.Linear(120, 84)
-        self.fc = nn.Linear(84, num_classes)
-
-    def forward(self, x):
-        x = self.pool(F.relu(self.conv1(x)))
-        x = self.pool(F.relu(self.conv2(x)))
-        x = x.view(-1, batch_size * 5 * 5)
-        x = F.relu(self.fc1(x))
-        x = F.relu(self.fc2(x))
         x = self.fc(x)
         x = F.log_softmax(x, dim=1)
         return x

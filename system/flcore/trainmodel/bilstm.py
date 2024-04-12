@@ -5,7 +5,7 @@ from torch import nn
 
 class BiLSTM_TextClassification(nn.Module):
     def __init__(self, input_size, hidden_size, output_size, num_layers, embedding_dropout, lstm_dropout,
-                 attention_dropout, embedding_length, attention=False, embedding_weights=None):
+                 attention_dropout,embedding_length, attention=False, embedding_weights=None):
         super(BiLSTM_TextClassification, self).__init__()
         self.input_size = input_size
         self.hidden_size = hidden_size
