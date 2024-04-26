@@ -32,7 +32,7 @@ Due to the file size limitation, we only upload the statistics (`config.json`) o
 # System
 
 - `main.py`: system configurations. 
-- `run_me.sh`: command lines to run experiments. 
+- `run_me.sh`: command lines to run experiments. It is advisable to retune hyperparameters on new tasks.
 - `flcore/`: 
     - `clients/`: the code on clients. See [HtFL](https://github.com/TsingZ0/HtFL) for baselines.
     - `servers/`: the code on servers. See [HtFL](https://github.com/TsingZ0/HtFL) for baselines.
