@@ -31,6 +31,8 @@ Due to the file size limitation, we only upload the statistics (`config.json`) o
 
 # System
 
+Learning reasonable global prototypes can be challenging in some cases, particularly due to the limited number of client prototypes and the introduced adaptive margin during ACL. To address this, consider setting a larger `top_cnt` and ensuring that the global communication iteration number is larger than 1000, which should result in a `Server loss` smaller than 0.001. The best accuracy is typically achieved when a minimal `Server loss` is obtained. In most of our experiments, we achieved a `Server loss` of 0.0. 
+
 - `main.py`: system configurations. 
 - `run_me.sh`: command lines to run experiments. It is advisable to retune hyperparameters on new tasks.
 - `flcore/`: 
