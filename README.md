@@ -26,7 +26,7 @@ The global and client prototypes in FedProto and our FedTGP. Different colors an
 
 # Dataset
 
-Due to the file size limitation, we only upload the statistics (`config.json`) of the Cifar10 dataset in the practical setting ($\beta=0.1$). Please refer to the popular repository [PFLlib](https://github.com/TsingZ0/PFLlib) to generate all the datasets and create the required python environment. 
+Due to the file size limitation, we only upload the statistics (`config.json`) of the Cifar10 dataset in the practical setting ($\beta=0.1$). Please refer to our popular repository [PFLlib](https://github.com/TsingZ0/PFLlib) and [HtFLlib](https://github.com/TsingZ0/HtFLlib) to generate all the [datasets](https://github.com/TsingZ0/PFLlib?tab=readme-ov-file#datasets-and-scenarios-updating) and create the required python [environment](https://github.com/TsingZ0/HtFLlib?tab=readme-ov-file#environments). 
 
 
 # System
