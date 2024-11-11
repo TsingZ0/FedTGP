@@ -24,7 +24,7 @@ Take away: We enhance the typical HtFL method FedProto with Trainable Global Pro
 The global and client prototypes in FedProto and our FedTGP. Different colors and numbers represent classes and clients, respectively. Circles represent the client prototypes and triangles represent the global prototypes. The black and yellow dotted arrows show the inter-class separation among the client and global prototypes, respectively. Triangles with dotted borders represent our Trainable Global Prototypes (TGP). The red arrows show the inter-class intervals between TGP and the client prototypes of other classes in our Adaptive-margin-enhanced Contrastive Learning (ACL).
 
 
-# Dataset
+# Datasets and Environments
 
 Due to the file size limitation, we only upload the statistics (`config.json`) of the Cifar10 dataset in the practical setting ($\beta=0.1$). Please refer to our popular repository [PFLlib](https://github.com/TsingZ0/PFLlib) and [HtFLlib](https://github.com/TsingZ0/HtFLlib) to generate all the [datasets](https://github.com/TsingZ0/PFLlib?tab=readme-ov-file#datasets-and-scenarios-updating) and create the required python [environment](https://github.com/TsingZ0/HtFLlib?tab=readme-ov-file#environments). 
 
@@ -42,4 +42,13 @@ Learning reasonable global prototypes can be challenging in some cases, particul
 - `utils/`:
     - `data_utils.py`: the code to read the dataset. 
     - `mem_utils.py`: the code to record memory usage. 
-    - `result_utils.py`: the code to save results to files. 
+    - `result_utils.py`: the code to save results to files.
+
+# Training and Evaluation
+
+All codes are stored in `./system`. Just run the following commands.
+
+```
+cd ./system
+sh run_me.sh
+```
