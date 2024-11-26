@@ -36,8 +36,8 @@ Learning reasonable global prototypes can be challenging in some cases, particul
 - `main.py`: system configurations. 
 - `run_me.sh`: command lines to run experiments. It is advisable to retune hyperparameters on new tasks.
 - `flcore/`: 
-    - `clients/`: the code on clients. See [HtFL](https://github.com/TsingZ0/HtFL) for baselines.
-    - `servers/`: the code on servers. See [HtFL](https://github.com/TsingZ0/HtFL) for baselines.
+    - `clients/`: the code on clients. See [HtFLlib](https://github.com/TsingZ0/HtFLlib) for baselines.
+    - `servers/`: the code on servers. See [HtFLlib](https://github.com/TsingZ0/HtFLlib) for baselines.
     - `trainmodel/`: the code for some heterogeneous client models. 
 - `utils/`:
     - `data_utils.py`: the code to read the dataset. 
